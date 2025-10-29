@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  if (code) {
+    fetch("https://app.n8n.cloud/webhook/google-auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ code })
+    });
+    document.body.innerText = "✅ Code received, you can close this tab.";
+  } else {
+    document.body.innerText = "No code found.";
+  }
+</script>
+</body>
+</html>
