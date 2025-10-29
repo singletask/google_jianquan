@@ -4,6 +4,7 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
+  console.log('params:', params);
   if (code) {
     fetch("https://charliemiller.app.n8n.cloud/webhook-test/google-auth", {
       method: "POST",
