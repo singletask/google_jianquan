@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="utf-8" />
+  <title>OAuth Redirect</title>
+</head>
 <body>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  console.log('params:', params);
-  if (code) {
-    fetch("https://charliemiller.app.n8n.cloud/webhook-test/google-auth", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ code })
-    });
-    document.body.innerText = "✅ Code received, you can close this tab.";
-  } else {
-    document.body.innerText = "No code found.";
-  }
-</script>
+  <h2>正在完成授权，请稍候...</h2>
+  <script>
+    // 从URL中解析 ?code=xxx
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+
+    if (code) {
+      // 把 code 发到 n8n webhook
+      fetch('https://charliemiller.app.n8n.cloud/webhook-test/google-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, state })
+      })
+      .then(res => res.text())
+      .then(text => {
+        document.body.innerHTML = `<p>授权成功，您可以关闭此页面。</p>`;
+        console.log('Webhook response:', text);
+      })
+      .catch(err => {
+        document.body.innerHTML = `<p>授权失败：${err}</p>`;
+        console.error('Error sending to webhook:', err);
+      });
+    } else {
+      document.body.innerHTML = `<p>未检测到 code 参数。</p>`;
+    }
+  </script>
 </body>
 </html>
